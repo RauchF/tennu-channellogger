@@ -1,0 +1,23 @@
+{
+  "name": "tennu-channellogger",
+  "version": "0.0.1",
+  "description": "Logs messages in channels to plain text files",
+  "main": "plugin.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RauchF/tennu-channellogger.git"
+  },
+  "keywords": [
+    "irc",
+    "tennu"
+  ],
+  "author": "Felix Rauch <rauch@skaiamail.de>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RauchF/tennu-channellogger/issues"
+  },
+  "homepage": "https://github.com/RauchF/tennu-channellogger#readme"
+}
