@@ -1,5 +1,4 @@
 const Logger = require("./message-logger");
-const startsWith = require("underscore.string/startswith");
 
 var ChannelLoggerPlugin = {
 
@@ -30,7 +29,7 @@ var ChannelLoggerPlugin = {
 
         const handleLogSignal = function(logData) {
             if (logData.length !== 2 || logData[0] !== '->'
-                || !startsWith(logData[1], 'PRIVMSG ')
+                || !logData[1].startsWith('PRIVMSG ')
             ) {
                 return;
             }

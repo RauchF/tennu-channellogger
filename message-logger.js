@@ -1,7 +1,6 @@
 const fs = require("node-fs");
 const dateFormat = require("dateformat");
 const format = require("util").format;
-const startsWith = require("underscore.string/startswith");
 
 function MessageLogger(network, channel, config, client) {
 	var logger = this;
@@ -57,11 +56,11 @@ function MessageLogger(network, channel, config, client) {
 		// TODO: Enable internationalization
 		switch (message.command) {
 			case "privmsg":
-				if (startsWith(message.message, config.noLogPrefix)) {
+				if (message.message.startsWith(config.noLogPrefix)) {
 					break;
 				}
 
-				if (startsWith(message.message, '\u0001ACTION ')) {
+				if (message.message.startsWith('\u0001ACTION ')) {
 					text = format(
 						'* %s %s', 
 						message.nickname, 
@@ -109,7 +108,7 @@ function MessageLogger(network, channel, config, client) {
 	}
 
 	this.parseLogevent = function(text) {
-		if (startsWith(text, '\u0001ACTION ')) {
+		if (text.startsWith('\u0001ACTION ')) {
 			text = format(
 				'* %s %s', 
 				client.nickname(), 

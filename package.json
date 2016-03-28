@@ -23,6 +23,5 @@
   "dependencies": {
     "dateformat": "^1.0.12",
     "node-fs": "^0.1.7",
-    "underscore.string": "^3.3.4"
   }
 }
