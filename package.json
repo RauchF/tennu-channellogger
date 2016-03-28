@@ -1,6 +1,6 @@
 {
   "name": "tennu-channellogger",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Logs messages in channels to plain text files",
   "main": "plugin.js",
   "scripts": {
