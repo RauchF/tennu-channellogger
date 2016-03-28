@@ -1,9 +1,9 @@
-var fs = require("node-fs");
-var dateFormat = require("dateformat");
-var format = require("util").format;
-var startsWith = require("underscore.string/startswith");
+const fs = require("node-fs");
+const dateFormat = require("dateformat");
+const format = require("util").format;
+const startsWith = require("underscore.string/startswith");
 
-function Logger(network, channel, config) {
+function MessageLogger(network, channel, config, client) {
 	var logger = this;
 
 	this.network = network;
@@ -108,14 +108,31 @@ function Logger(network, channel, config) {
 		return text;
 	}
 
+	this.parseLogevent = function(text) {
+		if (startsWith(text, '\u0001ACTION ')) {
+			text = format(
+				'* %s %s', 
+				client.nickname(), 
+				text.replace(/^\u0001ACTION |\u0001$/g, '')
+			);
+		} else {
+			text = format('<%s> %s', client.nickname(), text);
+		}
+
+		return text;
+	}
+
 	return {
 		getChannel: function() {
 			return logger.channel;
 		},
 		logMessage: function(message) {
 			logger.writeLog(logger.parseMessage(message));
+		},
+		logLogevent: function(text) {
+			logger.writeLog(logger.parseLogevent(text));
 		}
 	}
 }
 
-module.exports = Logger;
+module.exports = MessageLogger;

@@ -1,46 +1,73 @@
-var Logger = require("./logger");
+const Logger = require("./message-logger");
+const startsWith = require("underscore.string/startswith");
 
-var ChannelLogger = {
-	init: function (client, imports) {
-		// Initialization of the plugin
-		var channels = client.config("channels");
-		var network = client.config("server");
-		var config = client.config("channellogger");
+var ChannelLoggerPlugin = {
 
-		var loggers = {};
+    configDefaults: {
+        "channellogger": {
+            "file": {
+                "basepath": "./logs/",
+                "pattern": "%c/%Y/%m/%c-%Y-%m-%d.txt"
+            },
+            "prependLogDate": true,
+            "logDateFormat": "hh:MM:ss",
+            "noLogPrefix": "!nl",
+            "noLogMessage": "This message was not logged."        
+        }
+    },
 
-		for (var channel in channels) {
-			loggers[channel] = new Logger(network, channels[channel], config);
-		}
+    init: function (client, imports) {
+        // Initialization of the plugin
+        const channels = client.config("channels");
+        const network = client.config("server");
+        const config = client.config("channellogger");
 
-		var handleMessage = function(message) {
-			if ((message.hasOwnProperty("channel") && message.channel !== "")
-				|| message.command === "nick"
-				|| message.command === "quit"
-			) {
-				loggers[channel].logMessage(message);
-			}
-		} 
+        var loggers = {};
 
-		return {
-			exports: {
-			},
+        for (var channel in channels) {
+            loggers[channels[channel]] = new Logger(network, channels[channel], config, client);
+        }
 
-			handlers: {
-				"privmsg": handleMessage,
-				"join": handleMessage,
-				"part": handleMessage,
-				"quit": handleMessage,
-				"kick": handleMessage,
-				"nick": handleMessage
-			},
+        const handleLogSignal = function(logData) {
+            if (logData.length !== 2 || logData[0] !== '->'
+                || !startsWith(logData[1], 'PRIVMSG ')
+            ) {
+                return;
+            }
 
-			help: {
-			},
+            var matches = logData[1].match(/^PRIVMSG ([#!&+~]\w+) ?: ?(.*)$/);
 
-			commands: []
-		}
-	}
+            if (matches.length !== 3 || channels.indexOf(matches[1]) === -1) {
+                return;
+            }
+
+            loggers[matches[1]].logLogevent(matches[2]);
+        }
+
+        const handleMessage = function(message) {
+            if ((message.hasOwnProperty("channel") && message.channel !== "")
+                || message.command === "nick"
+                || message.command === "quit"
+            ) {
+                loggers[message.channel].logMessage(message);
+            }
+        } 
+
+        return {
+            handlers: {
+                "privmsg": handleMessage,
+                "join": handleMessage,
+                "part": handleMessage,
+                "quit": handleMessage,
+                "kick": handleMessage,
+                "nick": handleMessage,
+                "logemitter:info": handleLogSignal,
+                "!dothing": function (command) {
+                    return '\u0001ACTION does a thing.\u0001';
+                }
+            }
+        }
+    }
 }
 
-module.exports = ChannelLogger;
+module.exports = ChannelLoggerPlugin;
