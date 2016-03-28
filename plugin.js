@@ -34,7 +34,7 @@ var ChannelLoggerPlugin = {
                 return;
             }
 
-            var matches = logData[1].match(/^PRIVMSG ([#!&+~]\w+) ?: ?(.*)$/);
+            var matches = logData[1].match(/^PRIVMSG ([#!&+~][^\s:,;]+) ?: ?(.*)$/);
 
             if (matches.length !== 3 || channels.indexOf(matches[1]) === -1) {
                 return;
